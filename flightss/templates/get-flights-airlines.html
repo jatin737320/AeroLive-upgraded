@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS */
+        body {
+            background-image: url('/static/images/Airplane_Window_View.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        .login-container {
+            margin-top: 100px; /* Adjust the margin-top as needed */
+        }
+        .login-box {
+        
+            max-width: 600px; /* Set maximum width for the login box */
+            margin: 0 auto; /* Center the login box horizontally */
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.0); /* Transparent background */
+            border: 1px solid #000; /* Black border */
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Box shadow for a slight elevation effect */
+        }
+
+        .form-control {
+            background-color: transparent !important;
+            border-color: #333;
+            background-color: rgba(255, 255, 255, 0.9); 
+            /* Semi-transparent white background */
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse navbar-expand-lg" style = "background-color: #333;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">AERO LIVE</a>
+            </div>
+            <div class="navbar-nav mr-auto">
+                <a class="nav-link" href="{% url 'get-flights-airlines' %}">Airline Flights</a>
+            &nbsp; &nbsp;
+            <div class="navbar-nav mr-auto">
+                <a class="nav-link" href="{% url 'flight-stats2' %}">Flight Number</a>
+            </div>
+        </div>
+    </nav>
+
+<div class="container login-container">
+    <div class="login-box">
+        <h2 class = "text-center"> Flights </h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="airline_name" style = "font-weight: bold; font-size: 24px;">Enter Airline</label>
+                <input type="text" class="form-control" name="airline_name" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-submit">Submit</button>
+        </form>
+
+        <hr>
+
+        {% if Flights %}
+            {% for flight in Flights %}
+            
+                {% if flight %}
+                    
+                    <p style = "font-weight: bold;"> {{ flight }} </p>
+                    
+                    <div class = "form-control">
+                        <a href = "{% url 'flights-stats3' flight %}" style = "font-weight: bold;"> Check Flight-Info </a>
+                    </div>
+                    <hr>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+            
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

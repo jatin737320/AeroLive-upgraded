@@ -1,0 +1,128 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Information</title>
+    <style>
+        body {
+
+            {% if weather.sky == 'Fog' %}
+                background-image: url("{% static weather_images.Fog %}");
+
+            {% elif weather.sky == 'Cloudy' %}
+                background-image: url("{% static weather_images.cloudy %}");
+
+            {% elif weather.sky == 'Overcast' %}
+                background-image: url("{% static weather_images.overcast %}");
+            
+            {% elif weather.sky == 'Thunderstorm' %}
+                background-image: url("{% static weather_images.thunderstorm %}");
+                color: white;
+            {% elif weather.sky == 'Clear' %}
+                background-image: url("{% static weather_images.clear %}");
+            {% elif weather.sky == 'Drizzle' %}
+                background-image: url("{% static weather_images.drizzle %}");
+            {% elif weather.key == 'Rain' %}
+                background-image: url('{% static weather_images.rainy %}');
+            {% else %}
+
+                background-image: url('/https://example.com/airplane-background.jpg');
+            {% endif %}
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            color: #000000;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .weather-info {
+            //background: rgba(255, 255, 255); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .weather-info p {
+            margin: 10px 0;
+            font-size: 18px;
+            {% if weather.sky == 'Thunderstorm' %}
+                color: white;
+            {% else %}
+                font-weight: bold; /* Make text bold */
+            {% endif %}
+
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather Information</h1>
+    <div class="weather-info">
+        <p>Airport Name: {{ weather.airport_name }}</p>
+
+        <br>
+
+        <p>Airport Code: {{ weather.airport_code }}</p>
+
+        <br>
+
+        <p>Airport Elevation: {{ weather.airport_elevation }} ft</p>
+
+        <br>
+
+        <p>METAR: {{ weather.METAR }}</p>
+
+        <br>
+
+        <p>QNH: {{ weather.qnh }} hPa</p>
+
+        <br>
+
+        <p>Dewpoint: {{ weather.dewpoint }}°C</p>
+
+        <br>
+
+        <p>Humidity: {{ weather.humidity }}%</p>
+
+        <br>
+
+        <p>Sky Condition: {{ weather.sky }}</p>
+
+        <br>
+
+        <p>Visibility: {{ weather.visibility }} nmi</p>
+
+        <br>
+
+        <p>Wind: {{ weather.wind }}°</p>
+
+        <br>
+
+        <p>Wind Speed: {{ weather.wind_speed }} kts</p>
+
+        <br>
+
+        <p>Temperature: &nbsp; {{ weather.temperature }}°C</p>
+
+
+    </div>
+</body>
+</html>

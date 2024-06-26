@@ -1,0 +1,609 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Information</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.rotatedmarker/0.6.1/leaflet.rotatedMarker.min.js"></script>
+    <style>
+        body {
+            background-image: url('/static/Images/Airplane_Window_View.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Fix the background image in place */
+            //filter: brightness(1.1) contrast(1.1) saturate(1.2); /* Apply CSS filters */
+            //mix-blend-mode: luminosity;
+
+            font-family: Arial, sans-serif;
+            color: #000000;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        form {
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 400px;
+        }
+
+        form input, form select, form button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid black; /* Set border color to black */
+            color: black;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: transparent; 
+        }
+
+        form input[type="text"] {
+            width: 70%; /* Set the width of the input box */
+            padding: 10px; /* Adjust padding as needed */
+        }
+        
+        form button[type="submit"] {
+            width: 30%; /* Set the width of the submit button */
+            padding: 10px; /* Adjust padding as needed */
+        }
+
+        form label {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .flight-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            color: #000000; /* Darker color for flight information */
+        }
+
+        .flight-info p {
+            margin: 10px 0;
+            font-family: cursive;
+            font-size: 24px;
+            display: inline-block;
+            width: 40%;
+            text-align: left;
+            color: #000000; /* Darker color for flight information */
+            font-weight: bold; /* Make text bold */
+        }
+
+        .flight-info p:nth-child(odd) {
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        .flight-info p:nth-child(even) {
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+            border: 2px solid #000000; /* Border for the map */
+            border-radius: 10px;
+        }
+        .flight-info p:first-child {
+            white-space: nowrap; /* Prevent line breaks within the paragraph */
+        }
+
+
+    </style>
+
+    <nav class="navbar navbar-inverse navbar-expand-lg" style="background-color: #333; width: 100%;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">AERO LIVE</a>
+            </div>
+            <div class="navbar-nav mr-auto">
+                <a class="nav-link" href="{% url 'get-flights-airlines' %}">Airline Flights</a>
+                &nbsp; &nbsp;
+                <a class="nav-link" href="{% url 'flight-stats2' %}">Flight Number</a>
+            </div>
+        </div>
+    </nav>
+    
+
+</head>
+<body>
+
+    <h1>Flight Information</h1>
+
+    {% if flight_status %}
+        <div class = "flight-info">
+            {% if flight_status.prev < flight_status.altitude %}
+                <p>Climbing</p>
+            {% elif flight_status.prev > flight_status.altitude %}
+                <p>Descending</p>
+            {% elif flight_status.altitude == 0 %}
+                <p>The aircraft is on the ground</p>
+            {% else %}
+                <p>Leveled Flight</p>
+            {% endif %}
+        </div>
+    
+        
+        <div class="flight-info">
+            <p>Status:</p> <p>{{ flight_status.status }}</p>
+            <p>ETA:</p> <p>{{ flight_status.eta }}</p>
+            <p>Altitude:</p> <p>{{ flight_status.altitude }}</p>
+            <p>Heading:</p> <p>{{ flight_status.heading }}</p>
+            <p>Ground Speed:</p> <p>{{ flight_status.ground_speed }}</p>
+            <p>Aircraft Registration:</p> <p>{{ flight_status.aircraft_registration }}</p>
+            <p>Origin Airport:</p> <p>{{ flight_status.origin_airport }}</p>
+            <p>Destination Airport:</p> <p>{{ flight_status.destination_airport }}</p>
+            <p>Origin Airport Weather:</p> <p><a href="{% url 'weather' flight_status.origin_airport_icao %}">{{ flight_status.origin_airport_icao }}</a></p>
+            <p>Destination Airport Weather:</p> <p><a href="{% url 'weather' flight_status.destination_airport_icao %}">{{ flight_status.destination_airport_icao }}</a></p>
+
+            {% if flight_status.prev < flight_status.altitude %}
+                <p>Climbing</p>
+            {% elif flight_status.prev > flight_status.altitude %}
+                <p>Descending</p>
+            {% elif flight_status.altitude == 0 %}
+                <p>The aircraft is on the ground</p>
+            {% else %}
+                <p>Leveled Flight</p>
+            {% endif %}
+        </div>
+        <div id="map"></div>
+        <script>
+            var map = L.map('map',{tap: false}).setView([{{ flight_status.latitude }}, {{ flight_status.longitude }}], 6).fitWorld();
+           
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var flightPathCoordinates = [
+                {% for point in flight_status.trail %}
+                    [{{ point.lat }}, {{ point.lng }}],
+                {% endfor %}
+            ];
+
+            var flightPath = L.polyline(flightPathCoordinates, { color: 'blue' }).addTo(map);
+            
+            var maxBounds = flightPath.getBounds().pad(0.5); // Increase padding for better handling
+            map.setMaxBounds(maxBounds);
+
+            // Calculate the minimum zoom level based on the maximum bounds
+            var minZoom = map.getBoundsZoom(maxBounds);
+            map.setMinZoom(minZoom);
+
+            // Limit the maximum zoom level to prevent excessive zooming
+            var maxZoom = 18; // Adjust as needed
+            map.setMaxZoom(maxZoom);
+
+            // Enable dragging
+            map.dragging.enable();
+            map.scrollWheelZoom.enable();
+
+           
+            
+            /*L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);*/
+            //var flightMarker = L.marker([{{ flight_status.latitude }}, {{ flight_status.longitude }}]).addTo(map);
+            
+            var flightIcon = L.icon({
+                iconUrl: "https://as2.ftcdn.net/v2/jpg/00/95/60/61/1000_F_95606161_tZQbi5y8dWNxxJz7bLA3eifc9qzIgB4P.jpg",
+                iconSize: [20, 20],
+                iconAnchor: [15, 15],
+                popupAnchor: [0, -15]
+            });
+            var flightMarker = L.marker([{{ flight_status.latitude }}, {{ flight_status.longitude }}], {
+                rotationAngle: {{ flight_status.heading }}, // Set rotation angle based on flight heading
+                icon: flightIcon
+            }).addTo(map);
+            // Set custom icon for the flight marker
+            flightMarker.setIcon(flightIcon);
+
+            function updateFlightPosition(lat, lng) {
+                flightMarker.setLatLng([lat, lng]);
+                map.setView([lat, lng], 6);
+            }
+
+            // Example function to fetch real-time flight data
+            function fetchFlightData() {
+                // Replace with your API call to fetch real-time flight data
+                var lat = {{ flight_status.latitude }};
+                var lng = {{ flight_status.longitude }};
+                updateFlightPosition(lat, lng);
+            }
+
+            // Fetch flight data every 30 seconds
+            setInterval(fetchFlightData, 30000);
+
+        </script>
+    {% elif flight_not_found %}
+        <p>Flight not found.</p>
+    {% endif %}
+</body>
+</html>
+
+
+
+<!--
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Information</title>
+    <style>
+        body {
+            background-image: url('https://media.istockphoto.com/id/1157137642/photo/close-up-of-airplane-wing-flying-at-sunrise.jpg?s=1024x1024&w=is&k=20&c=-W77HXkbufIbMoacMYQTc9n4VxLpNunHbsxuCd6hW6w=');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            color: black;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        form {
+            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        form input, form select, form button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        p {
+            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            display: inline-block;
+            width: 40%;
+            text-align: left;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .flight-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flight Information</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ Form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    {% if flight_status %}
+        <div class="flight-info">
+            <p>Status: {{ flight_status.status }}</p>
+            <p>ETA: {{ flight_status.eta }}</p>
+            <p>Altitude: {{ flight_status.altitude }}</p>
+            <p>Heading: {{ flight_status.heading }}</p>
+            <p>Ground Speed: {{ flight_status.ground_speed }}</p>
+            <p>Aircraft Registration: {{ flight_status.aircraft_registration }}</p>
+            <p>Origin Airport: {{ flight_status.origin_airport }}</p>
+            <p>Destination Airport: {{ flight_status.destination_airport }}</p>
+
+            {% if flight_status.prev < flight_status.altitude %}
+                <p>Climbing</p>
+            {% elif flight_status.prev > flight_status.altitude %}
+                <p>Descending</p>
+            {% elif flight_status.altitude == 0 %}
+                <p>The aircraft is on the ground</p>
+            {% else %}
+                <p>Leveled Flight</p>
+            {% endif %}
+        </div>
+    {% elif flight_not_found %}
+        <p>Flight not found.</p>
+    {% endif %}
+</body>
+</html>
+
+
+-->
+
+
+
+
+
+
+
+
+<!--
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Information</title>
+    <style>
+        body {
+            background-image: url('https://media.istockphoto.com/id/1157137642/photo/close-up-of-airplane-wing-flying-at-sunrise.jpg?s=1024x1024&w=is&k=20&c=-W77HXkbufIbMoacMYQTc9n4VxLpNunHbsxuCd6hW6w=');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            color: black;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        form {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        form input, form select, form button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        p {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            display: inline-block;
+            width: 40%;
+            text-align: left;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .flight-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flight Information</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ Form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    {% if flight_status %}
+        <div class="flight-info">
+            <p>Status: {{ flight_status.status }}</p>
+            <p>ETA: {{ flight_status.eta }}</p>
+            <p>Altitude: {{ flight_status.altitude }}</p>
+            <p>Heading: {{ flight_status.heading }}</p>
+            <p>Ground Speed: {{ flight_status.ground_speed }}</p>
+            <p>Aircraft Registration: {{ flight_status.aircraft_registration }}</p>
+            <p>Origin Airport: {{ flight_status.origin_airport }}</p>
+            <p>Destination Airport: {{ flight_status.destination_airport }}</p>
+
+            {% if flight_status.prev < flight_status.altitude %}
+                <p>Climbing</p>
+            {% elif flight_status.prev > flight_status.altitude %}
+                <p>Descending</p>
+            {% elif flight_status.altitude == 0 %}
+                <p>The aircraft is on the ground</p>
+            {% else %}
+                <p>Leveled Flight</p>
+            {% endif %}
+        </div>
+    {% elif flight_not_found %}
+        <p>Flight not found.</p>
+    {% endif %}
+</body>
+</html>
+
+
+-->
+
+
+
+
+
+<!--
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Information</title>
+    <style>
+        body {
+            background-image: url('https://media.istockphoto.com/id/1157137642/photo/close-up-of-airplane-wing-flying-at-sunrise.jpg?s=1024x1024&w=is&k=20&c=-W77HXkbufIbMoacMYQTc9n4VxLpNunHbsxuCd6hW6w=');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            color: black;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        form {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 300px;
+        }
+
+        p {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            width: fit-content;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flight Information</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ Form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    {% if flight_status %}
+        <p>Status: {{ flight_status.status }}</p>
+        <p>ETA: {{ flight_status.eta }}</p>
+        <p>Altitude: {{ flight_status.altitude }}</p>
+        <p>Heading: {{ flight_status.heading }}</p>
+        <p>Ground Speed: {{ flight_status.ground_speed }}</p>
+        <p>Aircraft Registration: {{ flight_status.aircraft_registration }}</p>
+        <p>Origin Airport: {{ flight_status.origin_airport }}</p>
+        <p>Destination Airport: {{ flight_status.destination_airport }}</p>
+
+        {% if flight_status.prev < flight_status.altitude %}
+            <p>Climbing</p>
+        {% elif flight_status.prev > flight_status.altitude %}
+            <p>Descending</p>
+        {% elif flight_status.altitude == 0 %}
+            <p>The aircraft is on the ground</p>
+        {% else %}
+            <p>Leveled Flight</p>
+        {% endif %}
+    {% elif flight_not_found %}
+        <p>Flight not found.</p>
+    {% endif %}
+</body>
+</html>
+-->

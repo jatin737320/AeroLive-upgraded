@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Information</title>
+</head>
+<body>
+    <h1>Flight Information</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ Form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    {% if flight_status %}
+        <p>Status: {{ flight_status.status}}</p>
+        <p>ETA: {{ flight_status.ETA }}</p>
+        <p>altitude: {{ flight_status.altitude }}</p>
+        <p>Heading: {{ flight_status.heading }}</p>
+        <p>Ground Speed: {{flight_status.ground_speed}} </p>
+        <p>Aircraft Registration: {{flight_status.aircraft_registration}} </p>
+        <p>Origin Airport: {{flight_status.origin_airport}} </p>
+        <p>Destination Airport: {{ flight_status.destination_airport }}</p>
+
+        {% if flight_status.prev < flight_status.altitude %}
+            <p> Climbing </p>
+        {% elif flight_statis.prev > flight_status.altitude %}
+            <p> Descending </p>
+        {% elif flight_status.altitude == 0 %}
+            <p> The aircraft is on the ground </p>
+        {% else %}
+            <p> Levelled Flight </p>
+        {% endif %}
+
+    {% elif flight_not_found %}
+        <p>Flight not found.</p>
+    {% endif %}
+</body>
+</html>

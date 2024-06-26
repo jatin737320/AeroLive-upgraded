@@ -1,0 +1,28 @@
+<!-- templates/homepage.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Airline</title>
+</head>
+<body>
+    <h1>Select Airline</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
+
+        <h2>Flight List for {{ airline }}</h2>
+        <ul>
+            {%for flight in flights %}
+                <li>
+                    Flight: {{ flight.number }} 
+                    
+                </li>
+            {% endfor %}
+        </ul>
+    
+</body>
+</html>
