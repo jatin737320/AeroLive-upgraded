@@ -10,26 +10,26 @@
         body {
 
             {% if weather.sky == 'Fog' %}
-                background-image: url("{% static weather_images.Fog %}");
+                background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flickr.com%2Fphotos%2Fgolfcharlie232%2F34605621960&psig=AOvVaw0GfHUrflElfvT5OzeFua0f&ust=1719932373472000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCJjQismNhocDFQAAAAAdAAAAABAE");
 
             {% elif weather.sky == 'Cloudy' %}
-                background-image: url("{% static weather_images.cloudy %}");
+                background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freepik.com%2Fpremium-ai-image%2Fairplane-runway-gloomy-weather_144009699.htm&psig=AOvVaw3XL7C2tSIQHJsHUQT9b7MR&ust=1719932633041000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCJiH1cOOhocDFQAAAAAdAAAAABAE");
 
             {% elif weather.sky == 'Overcast' %}
-                background-image: url("{% static weather_images.overcast %}");
+                background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwjla.com%2Fweather%2Fstormwatch7-weather-blog%2Fseattle-washington-sunnier-than-washington-dc&psig=AOvVaw3LBcnkIc9mXIThJs4PpN9S&ust=1719932670239000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPDx2NiOhocDFQAAAAAdAAAAABAJ");
             
             {% elif weather.sky == 'Thunderstorm' %}
-                background-image: url("{% static weather_images.thunderstorm %}");
+                background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.quora.com%2FWill-airliners-take-off-in-rain-Why&psig=AOvVaw3LBcnkIc9mXIThJs4PpN9S&ust=1719932670239000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPDx2NiOhocDFQAAAAAdAAAAABAR");
                 color: white;
             {% elif weather.sky == 'Clear' %}
-                background-image: url("{% static weather_images.clear %}");
+                background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freepik.com%2Fpremium-photo%2Frunway-airport-with-good-weather-clear-blue-sky_24494035.htm&psig=AOvVaw3-rLlH-2CjBlGcUyp43jG3&ust=1719932746976000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMCQ_fSOhocDFQAAAAAdAAAAABAE");
             {% elif weather.sky == 'Drizzle' %}
-                background-image: url("{% static weather_images.drizzle %}");
+                background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freepik.com%2Fpremium-ai-image%2Frainy-weather-wet-airport-runway-with-reflections_65176864.htm&psig=AOvVaw2feNNxD3rWCtc7Qlbh8iVC&ust=1719932804462000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIjslKaPhocDFQAAAAAdAAAAABBI");
             {% elif weather.key == 'Rain' %}
-                background-image: url('{% static weather_images.rainy %}');
+                background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.youtube.com%2Fwatch%3Fv%3D5wjoF8-Oaew&psig=AOvVaw0LTYAaqNFmlSF247GXS2Ws&ust=1719932958487000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPDIleKPhocDFQAAAAAdAAAAABAR');
             {% else %}
 
-                background-image: url('/https://example.com/airplane-background.jpg');
+                background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pinterest.com%2Fpin%2F300404237620714840%2F&psig=AOvVaw1KNx7XovPid_QpCQg2nRF7&ust=1719933057145000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPi5l5GQhocDFQAAAAAdAAAAABAQ');
             {% endif %}
             background-size: cover;
             background-position: center;
